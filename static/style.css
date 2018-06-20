@@ -1,0 +1,61 @@
+body, html {
+    height: 100%;
+    margin: 0;
+}
+
+.bg {
+    background-image: url("background.jpg");
+    height: 100%; 
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    z-index: -9999;
+    background-color: #1f0a07;
+}
+
+#mapid {
+     min-height: 180px;
+     max-height: 100%;
+}
+
+#logo{
+    padding-top: 25%;
+    font-size: 10em;
+    color:aliceblue;
+    font-family: 'Luckiest Guy';
+}
+
+.jumbotron{
+    margin-top:7.5%;
+    background-color: rgba(12, 9, 51,0.75);
+    font-family: 'Andika', sans-serif;
+    font-size: 3em;
+    color:aliceblue;
+}
+
+@media only screen and (max-width: 500px) {
+    #logo{
+        font-size: 5em;
+    }
+
+    #mapid {
+        margin-top:20px;
+    }
+    .jumbotron{
+    font-size:1.75em;
+}
+}
+
+#new_search{
+    margin-top:20px;
+}
+
+h2{
+    font-family: 'Open Sans';
+    color: aliceblue;
+}
+
+#address_field{
+    min-width: 66%;
+    max-width: 90%;
+}

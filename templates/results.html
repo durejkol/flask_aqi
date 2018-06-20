@@ -1,0 +1,81 @@
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="Strona na której sprawdzisz jakość powietrza którym oddychasz">
+    <meta name="author" content="Łukasz D">
+    <title>AQI </title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb"
+        crossorigin="anonymous">
+    <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" integrity="sha512-M2wvCLH6DSRazYeZRIm1JnYyh22purTM+FDB5CsyxtQJYeKq83arPe5wgbNmcFXGqiSH2XR8dT/fJISVA1r/zQ=="
+        crossorigin="" />
+    <link href="https://fonts.googleapis.com/css?family=Luckiest+Guy|Open+Sans|Andika" rel="stylesheet">
+    <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js" integrity="sha512-lInM/apFSqyy1o6s89K4iQUKg6ppXEgsVxT35HbzUupEVRh2Eu9Wdl4tHj7dZO0s1uvplcYGmt3498TtHq+log=="
+        crossorigin=""></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh"
+        crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ"
+        crossorigin="anonymous"></script>
+</head>
+
+<body class="bg">
+    <section id="page">
+        <div class="container-fluid text-center">
+            <div class="row justify-content-md-center">
+                <div class="col-xs-10 col-sm-10 col-md-10 col-lg-10">
+                    <h1 class="jumbotron">Indeks jakości powietrza (AQI) dla {{results.address}}</h1>
+                </div>
+            </div>
+            <div class="row justify-content-md-center" style="margin-bottom:20px">
+                <div class="col-xs-10 col-sm-10 col-md-5 col-lg-5">
+                    <ul class="list list-group">
+                        <h2>
+                            <li class="list-group-item {{results.bootstrap_class}}">AQI = {{results.aqi_value}} {% if results.pm25_value %}| PM2.5 = {{results.pm25_value}} µg/m3 {% endif %} {% if results.pm10_value %}| PM10 = {{results.pm10_value}} µg/m3 {% endif %}</li>
+                        </h2>
+                        <li class="list-group-item text-left">
+                            <b> Punkt pomiaru: </b>{{results.measure_point_name}}</li>
+                        <li class="list-group-item text-left">
+                            <b> Data pomiaru: </b>{{results.measurment_time}}</li>
+                        <li class="list-group-item text-left">
+                            <b> Jakość powietrza: </b>{{results.air_quality}} </li>
+                        <li class="list-group-item text-left">
+                            <b> Interpretacja AQI: </b>{{results.aqi_interpretation}} </li>
+                        <li class="list-group-item text-left">
+                            <b> Odległość pomiędzy podanym adresem i punktem pomiaru: </b> {{results.distance_str}} </li>
+                    </ul>
+                </div>
+                <div class="col-xs-10 col-sm-10 col-md-5 col-lg-5" id="mapid">
+                </div>
+            </div>
+            <div class="row justify-content-md-center">
+                <div class="col-xs-10 col-sm-8 col-md-6 col-lg-4">
+                    <a href="/" id="new_search">
+                        <button class="btn btn-primary btn-lg">Nowe wyszukiwanie</button>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+<script>
+    var mymap = L.map('mapid').setView([{{ results.map_center[0] }}, {{ results.map_center[1] }}], {{ results.map_zoom }});
+    var address_marker = L.marker([{{ results.address_coords[0] }}, {{ results.address_coords[1] }}]).addTo(mymap);
+    var measure_point_marker = L.marker([{{ results.measure_point_coords[0] }}, {{ results.measure_point_coords[1] }}]).addTo(mymap);
+    address_marker.bindPopup("<b>Podany adres</b>");
+    measure_point_marker.bindPopup("<b>Punkt pomiaru</b>");
+
+    L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1Ijoid2VuZHppb3IiLCJhIjoiY2pibTd3Ymh3MzdrNDJ3cXljcHFvNWc1bCJ9.hju4ByixMWIKYjSciujp2g', {
+        maxZoom: 18,
+        attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+            '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+            'Imagery © <a href="http://mapbox.com">Mapbox</a>',
+        id: 'mapbox.streets'
+    }).addTo(mymap);
+
+</script>
+
+</html>
